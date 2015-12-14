@@ -25,6 +25,27 @@ class ViewController: UIViewController, UITableViewDataSource {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    //Fetching from Core Data
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        //1
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        
+        //2
+        let fetchRequest = NSFetchRequest(entityName: "Person")
+        
+        //3
+        do {
+            let results = try managedContext.executeFetchRequest(fetchRequest)
+            people = results as! [NSManagedObject]
+        } catch let error as NSError {
+            print("could not fetch \(error), \(error.userInfo)")
+        }
+    }
 
     @IBAction func addName(sender: AnyObject) {
         
@@ -58,7 +79,7 @@ class ViewController: UIViewController, UITableViewDataSource {
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell")
-        let person = people[indexPath.row]//people[indexPath.row]
+        let person = people[indexPath.row]
         cell!.textLabel!.text = person.valueForKey("name") as? String
         return cell!
     }
@@ -83,9 +104,11 @@ class ViewController: UIViewController, UITableViewDataSource {
             //5
             people.append(person)
         } catch let error as NSError {
-                print("could not save \(error), \(error.userInfo)")
+                print("Could not save \(error), \(error.userInfo)")
         }
     }
+    
+    
 
 }
 
