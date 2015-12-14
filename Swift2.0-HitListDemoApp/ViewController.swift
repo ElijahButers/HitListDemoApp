@@ -26,9 +26,30 @@ class ViewController: UIViewController, UITableViewDataSource {
     }
 
     @IBAction func addName(sender: AnyObject) {
-    }
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        let alert = UIAlertController(title: "Name", message: "Add a name", preferredStyle: .Alert)
+        let saveAction = UIAlertAction(title: "Save", style: .Default,
+            handler: { (action:UIAlertAction) -> Void in
+            
+            let textField = alert.textFields!.first
+            self.names.append(textField!.text!)
+            self.tableView.reloadData()
+            })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Default) { (alert: UIAlertAction) -> Void in
+        }
+        
+        alert.addTextFieldWithConfigurationHandler { (textField: UITextField) -> Void in
+        }
+        
+        alert.addAction(saveAction)
+        alert.addAction(cancelAction)
+        
+        presentViewController(alert, animated: true, completion: nil)
+        
+        }
+        
+        func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return names.count
     }
