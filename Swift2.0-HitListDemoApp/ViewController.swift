@@ -7,11 +7,12 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UIViewController, UITableViewDataSource {
 
     @IBOutlet weak var tableView: UITableView!
-    var names = [String]()
+    var people = [NSManagedObject]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,7 +33,7 @@ class ViewController: UIViewController, UITableViewDataSource {
             handler: { (action:UIAlertAction) -> Void in
             
             let textField = alert.textFields!.first
-            self.names.append(textField!.text!)
+            self.saveName(textField!.text!)
             self.tableView.reloadData()
             })
         
@@ -48,17 +49,42 @@ class ViewController: UIViewController, UITableViewDataSource {
         presentViewController(alert, animated: true, completion: nil)
         
         }
-        
+    
         func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return names.count
+        return people.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell")
-        cell?.textLabel?.text = names[indexPath.row]
+        let person = people[indexPath.row]//people[indexPath.row]
+        cell!.textLabel!.text = person.valueForKey("name") as? String
         return cell!
+    }
+    
+    func saveName(name: String) {
+        
+        //1
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        
+        //2
+        let entity = NSEntityDescription.entityForName("Person", inManagedObjectContext: managedContext)
+        
+        let person = NSManagedObject(entity: entity!, insertIntoManagedObjectContext: managedContext)
+        
+        //3
+        person.setValue(name, forKey: "name")
+        
+        //4
+        do {
+            try managedContext.save()
+            //5
+            people.append(person)
+        } catch let error as NSError {
+                print("could not save \(error), \(error.userInfo)")
+        }
     }
 
 }
